@@ -19,12 +19,15 @@ function Login() {
                 password: password
             });
 
+            
+
             // 2. Si ça marche, Django nous renvoie les tokens
             console.log("Succès :", response.data);
 
             // 3. On stocke le token d'accès dans le navigateur (localStorage)
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
+            localStorage.setItem('user_role', response.data.role); // Stocke le rôle de l'utilisateur
 
             // 4. On redirige l'utilisateur vers la page d'accueil (ou dashboard)
             alert("Connexion réussie !");

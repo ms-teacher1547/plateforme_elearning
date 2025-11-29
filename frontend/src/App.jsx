@@ -1,32 +1,37 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './components/Login';
-
-// Un petit composant Dashboard temporaire pour tester la redirection
-function Dashboard() {
-  return (
-    <div style={{ padding: '20px' }}>
-      <h1>Tableau de Bord</h1>
-      <p>Bienvenue dans votre espace étudiant !</p>
-      <button onClick={() => {
-        localStorage.clear();
-        window.location.href = '/login';
-      }}>Se déconnecter</button>
-    </div>
-  );
-}
+import CourseList from './components/CourseList'; // Importez le nouveau composant
+import CourseDetail from './components/CourseDetail';
+import TakeExam from './components/TakeExam';
 
 function App() {
+  const handleLogout = () => {
+    localStorage.clear(); // On supprime le token
+    window.location.href = '/login';
+  };
+
   return (
     <Router>
-      <nav style={{ padding: '10px', backgroundColor: '#eee', marginBottom: '20px' }}>
-        <Link to="/login" style={{ marginRight: '10px' }}>Connexion</Link>
-        <Link to="/dashboard">Dashboard</Link>
+      <nav style={{ padding: '15px', backgroundColor: '#333', color: 'white', display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+            <span style={{ fontWeight: 'bold', marginRight: '20px' }}>E-Learning</span>
+            <Link to="/dashboard" style={{ color: 'white', textDecoration: 'none', marginRight: '15px' }}>Cours</Link>
+        </div>
+        <div>
+            <Link to="/login" style={{ color: 'white', textDecoration: 'none', marginRight: '15px' }}>Connexion</Link>
+            <button onClick={handleLogout} style={{ backgroundColor: '#d9534f', border: 'none', color: 'white', padding: '5px 10px', cursor: 'pointer', borderRadius: '4px' }}>
+                Déconnexion
+            </button>
+        </div>
       </nav>
 
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/" element={<div style={{padding: '20px'}}><h1>Bienvenue sur E-Learning</h1><p>Veuillez vous connecter.</p></div>} />
+        {/* On remplace le dashboard temporaire par la liste des cours */}
+        <Route path="/dashboard" element={<CourseList />} />
+        <Route path="/course/:id" element={<CourseDetail />} />
+        <Route path="/exam/:id" element={<TakeExam />} />
+        <Route path="/" element={<div style={{padding: '20px'}}><h1>Bienvenue</h1><p>Connectez-vous pour voir les cours.</p></div>} />
       </Routes>
     </Router>
   )
