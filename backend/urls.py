@@ -1,18 +1,26 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from users.views import UserViewSet # Nous allons créer ça juste après pour éviter une erreur
-from courses.views import CourseViewSet
-from exams.views import ExamViewSet
+from courses.views import CourseViewSet, LessonViewSet
+from exams.views import ExamViewSet, QuestionViewSet
+from users.views import UserViewSet
 
-# Création du routeur
+# Import pour JWT
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 router = DefaultRouter()
+router.register(r'users', UserViewSet)
 router.register(r'courses', CourseViewSet)
 router.register(r'exams', ExamViewSet)
-# Nous ajouterons les users plus tard, je commente la ligne pour l'instant pour éviter le crash
-router.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)), # Toutes nos adresses commenceront par /api/
+    path('api/', include(router.urls)),
+    
+    # Les endpoints pour obtenir le token (Login)
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
