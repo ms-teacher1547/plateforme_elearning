@@ -21,12 +21,19 @@ Petit projet Django fournissant un backend minimal pour une plateforme d'e-learn
 - `profile_photos/` : stockage des photos de profil
 
 ## Contribuer
-- Ouvrez une issue pour proposer des changements.
-- Forkez le dépôt, créez une branche, puis faites une PR.
+- Ouvrez une issue pour discuter de votre proposition avant de commencer.
+- Forkez le dépôt et créez une branche descriptive (ex: `feat/ajout-auth`).
+- Ajoutez des tests pour toute nouvelle fonctionnalité ou correction de bug.
+- Respectez le style PEP8 ; vous pouvez formater avec `black` et vérifier les types avec `mypy` si présents.
+- Faites vos commits clairs et atomiques, puis ouvrez une Pull Request vers la branche `main`. Décrivez les changements et liez l'issue associée.
 
 ## Licence
-- À définir (contactez l'auteur si nécessaire)
+- À définir — si vous souhaitez une licence par défaut, je peux ajouter une licence MIT ou une autre licence appropriée.
+
+## Contact
+- Auteur : `ms-teacher1547`
+- Pour toute question : ouvrez une issue ou contactez le propriétaire du dépôt.
 
 ---
 
-Auteur : `ms-teacher1547`
+Merci de contribuer !
