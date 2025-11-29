@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework', # Django REST framework
     'corsheaders',   # CORS headers
     'users',         # Users app
+    'courses',       # Courses app
+    'exams',         # Exams app
 ]
 
 MIDDLEWARE = [
