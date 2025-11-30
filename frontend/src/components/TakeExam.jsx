@@ -33,15 +33,27 @@ function TakeExam() {
     };
 
     const handleSubmit = async () => {
-        // Calcul du score "simulé" côté frontend pour l'instant (pour un feedback immédiat)
-        // Dans une version V2, on enverrait tout au backend pour correction sécurisée.
-        let calculatedScore = 0;
-        let totalPoints = 0;
+        const token = localStorage.getItem('access_token');
+        
+        try {
+            // On envoie les réponses au Backend pour correction
+            // L'URL sera : /api/exams/{id}/submit/
+            const response = await axios.post(`http://127.0.0.1:8000/api/exams/${id}/submit/`, 
+                { answers: answers }, 
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
 
-        // Note: Ici on triche un peu pour la démo car on n'a pas les "bonnes réponses" dans le JSON (sécurité).
-        // Pour valider le projet aujourd'hui, on va simuler la soumission.
-        alert("Examen envoyé ! (Correction backend en cours de développement)");
-        navigate('/dashboard');
+            // Le backend nous renvoie la note calculée
+            const result = response.data;
+            alert(`Correction terminée !\nVotre note : ${result.score} / ${result.total_points}`);
+            
+            // On retourne au tableau de bord
+            navigate('/dashboard');
+
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors de l'envoi de l'examen.");
+        }
     };
 
     if (!exam) return <p>Chargement de l'examen...</p>;
