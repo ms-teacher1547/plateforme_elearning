@@ -1,25 +1,26 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './components/Login';
-import CourseList from './components/CourseList'; // Importez le nouveau composant
+import CourseList from './components/CourseList';
 import CourseDetail from './components/CourseDetail';
 import TakeExam from './components/TakeExam';
+import Results from './components/Results'; // <--- AJOUT 1 : Import
 
 function App() {
   const handleLogout = () => {
-    localStorage.clear(); // On supprime le token
+    localStorage.clear();
     window.location.href = '/login';
   };
 
   return (
     <Router>
-      <nav style={{ padding: '15px', backgroundColor: '#333', color: 'white', display: 'flex', justifyContent: 'space-between' }}>
-        <div>
-            <span style={{ fontWeight: 'bold', marginRight: '20px' }}>E-Learning</span>
-            <Link to="/dashboard" style={{ color: 'white', textDecoration: 'none', marginRight: '15px' }}>Cours</Link>
+      <nav style={{ padding: '15px', backgroundColor: '#333', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+            <span style={{ fontWeight: 'bold', fontSize: '1.2em' }}>E-Learning</span>
+            <Link to="/dashboard" style={{ color: 'white', textDecoration: 'none' }}>Cours</Link>
+            <Link to="/results" style={{ color: 'white', textDecoration: 'none' }}>Résultats</Link> {/* <--- AJOUT 2 : Lien */}
         </div>
         <div>
-            <Link to="/login" style={{ color: 'white', textDecoration: 'none', marginRight: '15px' }}>Connexion</Link>
-            <button onClick={handleLogout} style={{ backgroundColor: '#d9534f', border: 'none', color: 'white', padding: '5px 10px', cursor: 'pointer', borderRadius: '4px' }}>
+            <button onClick={handleLogout} style={{ backgroundColor: '#d9534f', border: 'none', color: 'white', padding: '8px 15px', cursor: 'pointer', borderRadius: '4px' }}>
                 Déconnexion
             </button>
         </div>
@@ -27,11 +28,11 @@ function App() {
 
       <Routes>
         <Route path="/login" element={<Login />} />
-        {/* On remplace le dashboard temporaire par la liste des cours */}
         <Route path="/dashboard" element={<CourseList />} />
         <Route path="/course/:id" element={<CourseDetail />} />
         <Route path="/exam/:id" element={<TakeExam />} />
-        <Route path="/" element={<div style={{padding: '20px'}}><h1>Bienvenue</h1><p>Connectez-vous pour voir les cours.</p></div>} />
+        <Route path="/results" element={<Results />} /> {/* <--- AJOUT 3 : Route */}
+        <Route path="/" element={<div style={{padding: '20px'}}><h1>Bienvenue</h1><p><Link to="/login">Connectez-vous</Link></p></div>} />
       </Routes>
     </Router>
   )

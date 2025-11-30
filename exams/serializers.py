@@ -20,3 +20,12 @@ class ExamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Exam
         fields = ['id', 'title', 'description', 'duration_minutes', 'questions']
+        
+
+class ResultSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='student.username', read_only=True)
+    exam_title = serializers.CharField(source='exam.title', read_only=True)
+    
+    class Meta:
+        model = StudentExamResult
+        fields = ['id', 'student_name', 'exam_title', 'score', 'submitted_at']

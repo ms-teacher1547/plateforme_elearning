@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Exam, Question, Choice, StudentExamResult
-from .serializers import ExamSerializer, QuestionSerializer
+from .serializers import ExamSerializer, QuestionSerializer, ResultSerializer
 
 class ExamViewSet(viewsets.ModelViewSet):
     queryset = Exam.objects.all()
@@ -13,6 +13,15 @@ class ExamViewSet(viewsets.ModelViewSet):
     def submit(self, request, pk=None):
         exam = self.get_object() # On récupère l'examen concerné
         student = request.user # L'étudiant connecté
+        
+        # --- SECURITÉ : VERIRICATION DE TENTATIVE DE RE-SOUMISSION ---
+        if StudentExamResult.objects.filter(student=student, exam=exam).exists():
+            return Response(
+                {'message': 'Vous avez déjà passé cet examen. Une seule tentative est autorisée !'},
+                status=status.HTTP_403_FORBIDDEN # Code 403 (FORBIDDEN) pour indiquer que l'action est interdite
+            )
+        # -----------------------------------------------------------------------
+            
         
         # Les réponses envoyées par React : { "1": 4, "2": 8 } (QuestionID: ChoiceID)
         submitted_answers = request.data.get('answers', {})
@@ -54,3 +63,24 @@ class ExamViewSet(viewsets.ModelViewSet):
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    
+
+class ResultViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ResultSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        # Si c'est un Étudiant : il ne voit que SES résultats
+        if user.role == 'STUDENT':
+            return StudentExamResult.objects.filter(student=user)
+        
+        # Si c'est un Enseignant : il voit les résultats des examens liés à SES cours
+        elif user.role == 'TEACHER':
+            return StudentExamResult.objects.filter(exam__course__teacher=user)
+            
+        # Si Admin : Il voit tout
+        elif user.role == 'ADMIN' or user.is_superuser:
+            return StudentExamResult.objects.all()
+            
+        return StudentExamResult.objects.none()

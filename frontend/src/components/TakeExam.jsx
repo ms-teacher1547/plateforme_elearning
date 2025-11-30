@@ -52,7 +52,17 @@ function TakeExam() {
 
         } catch (err) {
             console.error(err);
-            alert("Erreur lors de l'envoi de l'examen.");
+            
+            // On vérifie si le serveur nous a envoyé un message d'erreur précis (ex: "Déjà passé")
+            if (err.response && err.response.data && err.response.data.message) {
+                alert("Attention : " + err.response.data.message);
+            } else {
+                // Erreur technique inconnue (serveur éteint, bug de code...)
+                alert("Erreur technique lors de l'envoi de l'examen.");
+            }
+            
+            // Dans tous les cas, on renvoie l'étudiant au tableau de bord pour qu'il ne force pas
+            navigate('/dashboard');
         }
     };
 
