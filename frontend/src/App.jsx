@@ -3,7 +3,8 @@ import Login from './components/Login';
 import CourseList from './components/CourseList';
 import CourseDetail from './components/CourseDetail';
 import TakeExam from './components/TakeExam';
-import Results from './components/Results'; // <--- AJOUT 1 : Import
+import Results from './components/Results'; 
+import Register from './components/Register';
 
 function App() {
   const handleLogout = () => {
@@ -32,6 +33,7 @@ function App() {
         <Route path="/course/:id" element={<CourseDetail />} />
         <Route path="/exam/:id" element={<TakeExam />} />
         <Route path="/results" element={<Results />} /> {/* <--- AJOUT 3 : Route */}
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<div style={{padding: '20px'}}><h1>Bienvenue</h1><p><Link to="/login">Connectez-vous</Link></p></div>} />
       </Routes>
     </Router>

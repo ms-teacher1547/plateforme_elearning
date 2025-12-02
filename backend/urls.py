@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from courses.views import CourseViewSet, LessonViewSet
 from exams.views import ExamViewSet, QuestionViewSet, ResultViewSet
 from users.views import UserViewSet
-from users.views import MyTokenObtainPairView
+from users.views import MyTokenObtainPairView, RegisterView
 
 # Import pour JWT
 from rest_framework_simplejwt.views import (
@@ -26,4 +26,8 @@ urlpatterns = [
     #path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # ... les autres paths ...
+    path('api/register/', RegisterView.as_view(), name='register'), # <--- NOUVELLE ROUTE
+    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # ...
 ]
