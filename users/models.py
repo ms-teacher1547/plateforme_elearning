@@ -18,6 +18,8 @@ class User(AbstractUser):
     
     # Photo de profil (Optionnel mais sympa pour l'UX)
     profile_photo = models.ImageField(verbose_name='Photo de profil', upload_to='profile_photos/', blank=True, null=True)
+    #
+    email_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.username} ({self.role})"

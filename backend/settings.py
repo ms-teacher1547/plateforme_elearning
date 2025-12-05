@@ -157,3 +157,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
 ]
+
+# Configuration Email (Mode Console)
+# Les emails s'afficheront dans votre terminal noir au lieu de partir sur internet
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST_USER = 'admin@elearning.com'
