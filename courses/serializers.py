@@ -21,3 +21,5 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['id', 'title', 'description', 'teacher_name', 'created_at', 'lessons', 'exams']
+        # Pour que le champ teacher ne soit pas modifiable via l'API 
+        read_only_fields = ['teacher']
