@@ -29,6 +29,7 @@ function Login() {
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             localStorage.setItem('user_role', response.data.role); // Stocke le rôle de l'utilisateur
+            localStorage.setItem('user_username', response.data.username); // Stocke le nom d'utilisateur
 
             // 4. On redirige l'utilisateur vers la page d'accueil (ou dashboard)
             alert("Connexion réussie !");

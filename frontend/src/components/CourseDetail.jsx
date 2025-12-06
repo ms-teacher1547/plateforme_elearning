@@ -6,70 +6,138 @@ function CourseDetail() {
     const { id } = useParams();
     const [course, setCourse] = useState(null);
     const navigate = useNavigate();
-
-    // On récupère le rôle stocké lors du login
     const userRole = localStorage.getItem('user_role'); 
+    const currentUsername = localStorage.getItem('user_username'); // Récupère le nom d'utilisateur courant
+
+    // États pour le formulaire d'ajout de leçon
+    const [showLessonForm, setShowLessonForm] = useState(false);
+    const [newLesson, setNewLesson] = useState({ title: '', content: '', order: 1 });
+
+    // Fonction pour charger le cours (on la sort pour pouvoir la rappeler après un ajout)
+    const fetchCourseDetail = async () => {
+        const token = localStorage.getItem('access_token');
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/courses/${id}/`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            setCourse(response.data);
+            // On pré-remplit l'ordre de la prochaine leçon (s'il y en a 3, la prochaine sera la 4)
+            if (response.data.lessons && response.data.lessons.length > 0) {
+                setNewLesson(prev => ({ ...prev, order: response.data.lessons.length + 1 }));
+            }
+        } catch (err) {
+            console.error("Erreur", err);
+            alert("Impossible de charger ce cours.");
+            navigate('/dashboard');
+        }
+    };
 
     useEffect(() => {
-        const fetchCourseDetail = async () => {
-            const token = localStorage.getItem('access_token');
-            try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/courses/${id}/`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                setCourse(response.data);
-            } catch (err) {
-                console.error("Erreur", err);
-                alert("Impossible de charger ce cours.");
-                navigate('/dashboard');
-            }
-        };
         fetchCourseDetail();
     }, [id, navigate]);
 
-    if (!course) return <p style={{padding: '20px'}}>Chargement du cours...</p>;
+    // Fonction pour envoyer la nouvelle leçon
+    const handleAddLesson = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('access_token');
+        try {
+            await axios.post('http://127.0.0.1:8000/api/lessons/', {
+                ...newLesson,
+                course: id // On lie la leçon à ce cours
+            }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            alert("Leçon ajoutée !");
+            setShowLessonForm(false); // On cache le formulaire
+            setNewLesson({ title: '', content: '', order: newLesson.order + 1 }); // On reset
+            fetchCourseDetail(); // On rafraîchit la page pour voir la leçon apparaître
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors de l'ajout de la leçon.");
+        }
+    };
+
+    if (!course) return <p style={{padding: '20px'}}>Chargement...</p>;
 
     return (
         <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
             <button onClick={() => navigate('/dashboard')} style={{ marginBottom: '20px', cursor: 'pointer' }}>
-                ← Retour aux cours
+                ← Retour
             </button>
             
             <h1 style={{ color: '#333' }}>{course.title}</h1>
             <p style={{ fontStyle: 'italic', color: '#666' }}>Enseignant : {course.teacher_name}</p>
-            <div style={{ backgroundColor: '#f9f9f9', padding: '15px', borderRadius: '5px', marginBottom: '30px' }}>
-                <h3>Description</h3>
-                <p>{course.description}</p>
-            </div>
+            <p>{course.description}</p>
 
-            {/* --- BLOC EXAMENS --- */}
+            {/* --- ZONE PROFESSEUR : AJOUTER CONTENU --- */}
+            {userRole === 'TEACHER' && currentUsername === course.teacher_name && (
+                <div style={{ backgroundColor: '#e9ecef', padding: '15px', borderRadius: '5px', marginBottom: '20px', border: '1px solid #ced4da' }}>
+                    <h3 style={{ marginTop: 0 }}>Gestion du Cours</h3>
+                    
+                    <button 
+                        onClick={() => setShowLessonForm(!showLessonForm)}
+                        style={{ backgroundColor: '#007bff', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }}
+                    >
+                        {showLessonForm ? 'Annuler' : '+ Ajouter une Leçon'}
+                    </button>
+                    
+                    {/* Bouton pour l'examen (inactif pour l'instant, on le codera après) */}
+                    <button style={{ backgroundColor: '#6c757d', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'not-allowed', opacity: 0.7 }}>
+                        + Créer un Examen (Bientôt)
+                    </button>
+
+                    {/* Le Formulaire qui s'ouvre */}
+                    {showLessonForm && (
+                        <form onSubmit={handleAddLesson} style={{ marginTop: '15px', backgroundColor: 'white', padding: '15px', borderRadius: '5px' }}>
+                            <div style={{ marginBottom: '10px' }}>
+                                <label>Titre de la leçon :</label>
+                                <input 
+                                    type="text" 
+                                    required 
+                                    style={{ width: '100%', padding: '5px' }}
+                                    value={newLesson.title}
+                                    onChange={(e) => setNewLesson({...newLesson, title: e.target.value})}
+                                />
+                            </div>
+                            <div style={{ marginBottom: '10px' }}>
+                                <label>Contenu :</label>
+                                <textarea 
+                                    required 
+                                    rows="5"
+                                    style={{ width: '100%', padding: '5px' }}
+                                    value={newLesson.content}
+                                    onChange={(e) => setNewLesson({...newLesson, content: e.target.value})}
+                                />
+                            </div>
+                            <button type="submit" style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer' }}>
+                                Enregistrer la leçon
+                            </button>
+                        </form>
+                    )}
+                </div>
+            )}
+            {/* ----------------------------------------- */}
+
+            {/* --- BLOC EXAMENS (Déjà codé) --- */}
             {course.exams && course.exams.length > 0 && (
                 <div style={{ marginBottom: '30px', padding: '15px', border: '1px solid #c3e6cb', backgroundColor: '#d4edda', borderRadius: '5px' }}>
                     <h2 style={{ marginTop: 0, color: '#155724' }}>Evaluations</h2>
                     {course.exams.map(exam => (
                         <div key={exam.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                             <span><strong>{exam.title}</strong> ({exam.duration_minutes} min)</span>
-                            
-                            {/* --- MODIFICATION ICI : CONDITION D'AFFICHAGE --- */}
                             {userRole === 'STUDENT' ? (
-                                <button 
-                                    onClick={() => navigate(`/exam/${exam.id}`)}
-                                    style={{ backgroundColor: '#155724', color: 'white', border: 'none', padding: '5px 15px', borderRadius: '4px', cursor: 'pointer' }}
-                                >
-                                    Commencer l'examen
+                                <button onClick={() => navigate(`/exam/${exam.id}`)} style={{ backgroundColor: '#155724', color: 'white', border: 'none', padding: '5px 15px', borderRadius: '4px', cursor: 'pointer' }}>
+                                    Commencer
                                 </button>
                             ) : (
-                                <span style={{fontSize: '0.9em', color: '#666', fontStyle: 'italic'}}>
-                                    (Mode {userRole} : Vue seulement)
-                                </span>
+                                <span style={{fontSize: '0.9em', color: '#666', fontStyle: 'italic'}}>(Vue seulement)</span>
                             )}
-                            {/* ----------------------------------------------- */}
-
                         </div>
                     ))}
                 </div>
             )}
-            
+
             <h2>Leçons du cours</h2>
             {course.lessons && course.lessons.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -83,7 +151,7 @@ function CourseDetail() {
                     ))}
                 </div>
             ) : (
-                <p>Aucune leçon disponible pour le moment.</p>
+                <p>Aucune leçon pour l'instant.</p>
             )}
         </div>
     );
