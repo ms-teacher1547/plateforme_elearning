@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Exam, Question, Choice, StudentExamResult
-from .serializers import ExamSerializer, QuestionSerializer, ResultSerializer
+from .serializers import ExamSerializer, QuestionSerializer, ResultSerializer, QuestionWriteSerializer
 from rest_framework.exceptions import PermissionDenied
 
 class ExamViewSet(viewsets.ModelViewSet):
@@ -71,7 +71,21 @@ class ExamViewSet(viewsets.ModelViewSet):
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
+    
+    # Cette méthode choisit quel traducteur utiliser
+    def get_serializer_class(self):
+        # Si l'action est créer (create) ou modifier (update)
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return QuestionWriteSerializer
+        # Sinon (pour lister ou voir les détails), on prend le sécurisé
+        return QuestionSerializer
+
+    def perform_create(self, serializer):
+        exam = serializer.validated_data['exam']
+        if self.request.user != exam.course.teacher and not self.request.user.is_staff:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Vous ne pouvez pas modifier l'examen d'un autre enseignant !")
+        serializer.save()
     
 
 class ResultViewSet(viewsets.ReadOnlyModelViewSet):

@@ -13,10 +13,8 @@ router.register(r'users', UserViewSet)
 router.register(r'courses', CourseViewSet)
 router.register(r'exams', ExamViewSet)
 router.register(r'results', ResultViewSet, basename='results')
-
-# --- LA LIGNE MANQUANTE ---
 router.register(r'lessons', LessonViewSet) 
-# --------------------------
+router.register(r'questions', QuestionViewSet)  # Ajout du routeur pour les questions
 
 urlpatterns = [
     path('admin/', admin.site.urls),

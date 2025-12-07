@@ -192,6 +192,14 @@ function CourseDetail() {
                             ) : (
                                 <span style={{fontSize: '0.9em', color: '#666', fontStyle: 'italic'}}>(Vue seulement)</span>
                             )}
+                            {userRole === 'TEACHER' && currentUsername === course.teacher_name && (
+                                <button 
+                                    onClick={() => navigate(`/exam/${exam.id}/edit`)}
+                                    style={{ marginLeft: '10px', backgroundColor: '#ffc107', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}
+                                >
+                                    ⚙️ Ajouter des questions
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>

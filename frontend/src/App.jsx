@@ -6,6 +6,7 @@ import TakeExam from './components/TakeExam';
 import Results from './components/Results'; 
 import Register from './components/Register';
 import CreateCourse from './components/CreateCourse'; // Importation du composant CreateCourse
+import EditExam from './components/EditExam'; // 
 
 function App() {
   const handleLogout = () => {
@@ -46,6 +47,7 @@ function App() {
         <Route path="/results" element={<Results />} /> {/* <--- AJOUT 3 : Route */}
         <Route path="/register" element={<Register />} />
         <Route path="/create-course" element={<CreateCourse />} /> {/* <--- AJOUT 1 : Route pour créer un cours */}
+        <Route path="/exam/:id/edit" element={<EditExam />} />
         <Route path="/" element={<div style={{padding: '20px'}}><h1>Bienvenue</h1><p><Link to="/login">Connectez-vous</Link></p></div>} />
       </Routes>
     </Router>
