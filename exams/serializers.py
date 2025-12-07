@@ -19,7 +19,7 @@ class ExamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exam
-        fields = ['id', 'title', 'description', 'duration_minutes', 'questions']
+        fields = ['id', 'title', 'description', 'duration_minutes', 'questions', 'course']
         
 
 class ResultSerializer(serializers.ModelSerializer):

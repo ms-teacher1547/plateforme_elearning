@@ -3,10 +3,19 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import Exam, Question, Choice, StudentExamResult
 from .serializers import ExamSerializer, QuestionSerializer, ResultSerializer
+from rest_framework.exceptions import PermissionDenied
 
 class ExamViewSet(viewsets.ModelViewSet):
     queryset = Exam.objects.all()
     serializer_class = ExamSerializer
+    
+    # --- SÉCURITÉ AJOUTÉE ---
+    def perform_create(self, serializer):
+        course = serializer.validated_data['course']
+        # Seul le prof du cours (ou un admin) peut créer un examen pour ce cours
+        if self.request.user != course.teacher and not self.request.user.is_staff:
+            raise PermissionDenied("Vous ne pouvez pas ajouter d'examen au cours d'un autre enseignant !")
+        serializer.save()
 
     # --- NOUVELLE ACTION : CORRECTION AUTOMATIQUE ---
     @action(detail=True, methods=['post'])

@@ -12,6 +12,8 @@ function CourseDetail() {
     // États pour le formulaire d'ajout de leçon
     const [showLessonForm, setShowLessonForm] = useState(false);
     const [newLesson, setNewLesson] = useState({ title: '', content: '', order: 1 });
+    const [showExamForm, setShowExamForm] = useState(false);
+    const [newExam, setNewExam] = useState({ title: '', description: '', duration_minutes: 30 });
 
     // Fonction pour charger le cours (on la sort pour pouvoir la rappeler après un ajout)
     const fetchCourseDetail = async () => {
@@ -58,6 +60,26 @@ function CourseDetail() {
         }
     };
 
+    const handleAddExam = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('access_token');
+        try {
+            await axios.post('http://127.0.0.1:8000/api/exams/', {
+                ...newExam,
+                course: id
+            }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            alert("Examen créé !");
+            setShowExamForm(false);
+            setNewExam({ title: '', description: '', duration_minutes: 30 });
+            fetchCourseDetail();
+        } catch (err) {
+            console.error(err);
+            alert("Erreur création examen.");
+        }
+    };
+
     if (!course) return <p style={{padding: '20px'}}>Chargement...</p>;
 
     return (
@@ -82,10 +104,47 @@ function CourseDetail() {
                         {showLessonForm ? 'Annuler' : '+ Ajouter une Leçon'}
                     </button>
                     
-                    {/* Bouton pour l'examen (inactif pour l'instant, on le codera après) */}
-                    <button style={{ backgroundColor: '#6c757d', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'not-allowed', opacity: 0.7 }}>
-                        + Créer un Examen (Bientôt)
-                    </button>
+                    {/* Bouton ACTIF */}
+                <button 
+                    onClick={() => setShowExamForm(!showExamForm)}
+                    style={{ backgroundColor: '#6f42c1', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                    {showExamForm ? 'Annuler' : '+ Créer un Examen'}
+                </button>
+
+                {/* Formulaire EXAMEN */}
+                {showExamForm && (
+                    <form onSubmit={handleAddExam} style={{ marginTop: '15px', backgroundColor: 'white', padding: '15px', borderRadius: '5px', border: '1px solid #6f42c1' }}>
+                        <h4 style={{marginTop: 0}}>Nouvel Examen</h4>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Titre :</label>
+                            <input 
+                                type="text" required style={{ width: '100%', padding: '5px' }}
+                                value={newExam.title}
+                                onChange={(e) => setNewExam({...newExam, title: e.target.value})}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Durée (minutes) :</label>
+                            <input 
+                                type="number" required style={{ width: '100%', padding: '5px' }}
+                                value={newExam.duration_minutes}
+                                onChange={(e) => setNewExam({...newExam, duration_minutes: parseInt(e.target.value)})}
+                            />
+                        </div>
+                        <div style={{ marginBottom: '10px' }}>
+                            <label>Description / Consignes :</label>
+                            <textarea 
+                                style={{ width: '100%', padding: '5px' }}
+                                value={newExam.description}
+                                onChange={(e) => setNewExam({...newExam, description: e.target.value})}
+                            />
+                        </div>
+                        <button type="submit" style={{ backgroundColor: '#6f42c1', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer' }}>
+                            Créer l'examen
+                        </button>
+                    </form>
+                    )}
 
                     {/* Le Formulaire qui s'ouvre */}
                     {showLessonForm && (
