@@ -5,8 +5,9 @@ from users.views import UserViewSet, MyTokenObtainPairView, RegisterView, Activa
 from rest_framework_simplejwt.views import TokenRefreshView
 
 # Imports des Vues (Courses et Exams)
-from courses.views import CourseViewSet, LessonViewSet # <--- Vérifiez que LessonViewSet est là
+from courses.views import CourseViewSet, LessonViewSet 
 from exams.views import ExamViewSet, QuestionViewSet, ResultViewSet
+from chat.views import MessageViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -14,7 +15,8 @@ router.register(r'courses', CourseViewSet)
 router.register(r'exams', ExamViewSet)
 router.register(r'results', ResultViewSet, basename='results')
 router.register(r'lessons', LessonViewSet) 
-router.register(r'questions', QuestionViewSet)  # Ajout du routeur pour les questions
+router.register(r'questions', QuestionViewSet) 
+router.register(r'messages', MessageViewSet, basename='messages')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
